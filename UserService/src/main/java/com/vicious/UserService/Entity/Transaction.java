@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+//@IdClass(Transaction.class)
 public class Transaction extends BaseEntity{
 	
 	@Id
@@ -32,7 +34,7 @@ public class Transaction extends BaseEntity{
 	private UserRegistration userRegistration;
 	
 	@OneToMany(mappedBy = "transaction")
-	@JoinTable(name="trancac_transacline", joinColumns = @JoinColumn(name="transaction_Id"), inverseJoinColumns = @JoinColumn(name="transactionline_id"))
+	//@JoinTable(name="transac_transacline", joinColumns = @JoinColumn(name="transaction_Id"), inverseJoinColumns = @JoinColumn(name="transactionline_id"))
 	private List<TrancsactionLine> trancsactionLine;
 	
 

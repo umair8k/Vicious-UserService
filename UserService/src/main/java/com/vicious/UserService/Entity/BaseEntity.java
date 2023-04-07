@@ -1,5 +1,6 @@
 package com.vicious.UserService.Entity;
 
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.MappedSuperclass;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @MappedSuperclass
+@IdClass(BaseEntity.class)
 public abstract class BaseEntity implements Serializable{
 
 	@Id
