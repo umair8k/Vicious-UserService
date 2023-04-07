@@ -17,10 +17,8 @@ import lombok.Data;
 
 @Data
 @Entity
-public class ActivityBooking {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+public class ActivityBooking extends BaseEntity {
+
 	
 	@Transient
 	@OneToMany
