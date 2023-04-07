@@ -39,58 +39,60 @@ import com.vicious.UserService.Service.UserService;
 
 @RestController
 public class UserController {
-	
+
 	@Autowired
 	private UserService service;
-	
+
 	@Autowired
 	HotelClient client;
-	
+
 	@Autowired
 	RestaurantClient client1;
-	
+
 	@Autowired
 	RoomClient roomClient;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	RoomBookingRepository roomBookingRepository;
-	
-	
-	@PostMapping(value="/createRegistration",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public UserRegistration postString(@RequestParam String userRegistration,@RequestParam MultipartFile profilePicture) throws IOException{
+
+	@PostMapping(value = "/createRegistration", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }, produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public UserRegistration postString(@RequestParam String userRegistration,
+			@RequestParam MultipartFile profilePicture) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
-		UserRegistration registration=objectMapper.readValue(userRegistration, UserRegistration.class);
-		return service.saveUser(registration,profilePicture);
+		UserRegistration registration = objectMapper.readValue(userRegistration, UserRegistration.class);
+		return service.saveUser(registration, profilePicture);
 	}
-	
+
 	@GetMapping("/getByHotelNamesId/{id}")
 	public ResponseEntity<HotelNamesDTO> gethotelNames(@PathVariable Long id) {
 		return client.getByHotelNamesId(id);
 	}
+
 	@GetMapping("/getAllFoodMenu")
-	public ResponseEntity<List<FoodMenuDTO>> allFoodMenu(){
+	public ResponseEntity<List<FoodMenuDTO>> allFoodMenu() {
 		return client1.allFoodMenu();
 	}
-	
+
 	@PostMapping("/createBooking")
-	public ResponseEntity<?> createBooking(@RequestBody RoomBooking roomBooking, @RequestParam Long Id,RoomDetailsDTO roomDetails,@RequestParam String username) {
+	public ResponseEntity<?> createBooking(@RequestBody RoomBooking roomBooking, @RequestParam Long Id,
+			RoomDetailsDTO roomDetails, @RequestParam String username) {
 		roomDetails = roomClient.getByRoomDetailsId(Id).getBody();
-		//String username = roomBooking.getUserRegistration().getUsername();
+		// String username = roomBooking.getUserRegistration().getUsername();
 
 		UserRegistration user = this.userRepository.findByUsername(username);
 
 		roomBooking.setUserRegistration(user);
 
 		RoomDetailsDTO rooms = roomClient.getByRoomDetailsId(Id).getBody();
-			
-			roomBooking.setRoomDetails(rooms);
-			//return roomBooking;
-		
+
+		roomBooking.setRoomDetails(rooms);
+		// return roomBooking;
+
 		Double roomPrice = roomDetails.getRoomPrice();
 		if (roomBooking.getCheckIn() != null && roomBooking.getCheckOut() != null) {
 			// this.roomBookingRepository.save(roomBooking);
@@ -115,44 +117,49 @@ public class UserController {
 			roomBooking.setGstTax((roomBooking.getTotal() * 18 / 100));
 			roomBooking.setTotalPrice(roomBooking.getTotal() + roomBooking.getGstTax());
 			System.out.println("==========" + days);
-			roomDetails.setRoomStatus(true);
-			roomBookingRepository.save(roomBooking);
+			
+			RoomDetailsDTO details1= new RoomDetailsDTO();
+			details1.setRoomStatus(true);
+
+//			roomDetails.setRoomStatus(true);
+			RoomDetailsDTO rooms1 = roomClient.save(details1);
+
+			roomBooking.setRoomDetails(roomDetails);
+//			rooms1.setRoomStatus(true);
+		roomBookingRepository.save(roomBooking);
 
 			return new ResponseEntity<RoomBooking>(roomBooking, HttpStatus.OK);
 
 		}
 
 	}
-	
+
 	@Autowired
-    FoodOrderRepository foodOrderRepository; 
-	
+	FoodOrderRepository foodOrderRepository;
+
 	@PostMapping("/FoodOrder")
-	public ResponseEntity<?> saveFoodOrder(@RequestBody FoodOrder foodOrder,@RequestParam String username,
+	public ResponseEntity<?> saveFoodOrder(@RequestBody FoodOrder foodOrder, @RequestParam String username,
 			RoomDetailsDTO roomDetails, RoomBooking roomBooking) {
 
-		//String username = principal.getName();
+		// String username = principal.getName();
 
 		UserRegistration user = this.userRepository.findByUsername(username);
 
 		roomBooking.setUserRegistration(user);
-	
 
-				RoomDetailsDTO roomDetails1 = roomClient.getByRoomDetailsId(foodOrder.getRoomDetails().getId()).getBody();
-				
+		roomDetails = roomClient.getByRoomDetailsId(foodOrder.getRoomDetails().getId()).getBody();
 
-		if (roomDetails.getRoomStatus() == true) {
+		if (foodOrder.getRoomDetails().getRoomStatus() == true) {
 			System.out.println("Save FoodOrder>>>>>>>>>>>>>>>>>>>>>>");
-    Double total=0d;
-            
-            for(FoodMenuDTO foodmenu : foodOrder.getFoodMenu()) {
-            	foodmenu=client1.getByFoodMenuId(foodmenu.getId()).getBody();
-            	total+=foodmenu.getPrice();
-            }
-            
-            foodOrder.setTotal(total);
+			Double total = 0d;
 
-            
+			for (FoodMenuDTO foodmenu : foodOrder.getFoodMenu()) {
+				foodmenu = client1.getByFoodMenuId(foodmenu.getId()).getBody();
+				total += foodmenu.getPrice();
+			}
+
+			foodOrder.setTotal(total);
+
 			return new ResponseEntity<>(foodOrderRepository.save(foodOrder), HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>("can order only after booking the room", HttpStatus.BAD_REQUEST);
@@ -160,11 +167,5 @@ public class UserController {
 		}
 
 	}
-	
-	
-	
-	
-		
-	}
 
-
+}
