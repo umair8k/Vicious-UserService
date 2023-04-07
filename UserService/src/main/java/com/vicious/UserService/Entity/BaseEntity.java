@@ -1,27 +1,47 @@
 package com.vicious.UserService.Entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-@Entity
-public abstract class BaseEntity {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Setter
+@Getter
+@MappedSuperclass
+public abstract class BaseEntity implements Serializable{
 
 	@Id
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id",updatable = false, nullable = false,precision = 18)
+	protected Long id;
 
 	@Column(name="CreatedAt")
-	private LocalDateTime createdAt;
+	protected LocalDateTime createdAt;
 
 	@Column(name="CreatedLoginId")
-	private Long createdLoginId;
+	protected Long createdLoginId;
 
 	@Column(name="UpdatedAt")
-	private LocalDateTime updatedAt;
+	protected LocalDateTime updatedAt;
 
 	@Column(name="UpdatedLoginId")
-	private Long updatedLoginId;
+	protected Long updatedLoginId;
 
 }
