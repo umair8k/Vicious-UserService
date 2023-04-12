@@ -118,13 +118,15 @@ public class UserController {
 			roomBooking.setTotalPrice(roomBooking.getTotal() + roomBooking.getGstTax());
 			System.out.println("==========" + days);
 			
-			RoomDetailsDTO details1= new RoomDetailsDTO();
-			details1.setRoomStatus(true);
+			//RoomDetailsDTO details1= new RoomDetailsDTO();
+			//details1.setRoomStatus(true);
 
 //			roomDetails.setRoomStatus(true);
-			RoomDetailsDTO rooms1 = roomClient.save(details1);
+			//RoomDetailsDTO rooms1 = roomClient.save(details1);
 
-			roomBooking.setRoomDetails(roomDetails);
+			boolean r=roomClient.saveRoomDetails(Id);
+			roomDetails.setRoomStatus(r);
+			//roomBooking.setRoomDetails(roomDetails);
 //			rooms1.setRoomStatus(true);
 		roomBookingRepository.save(roomBooking);
 
@@ -139,7 +141,7 @@ public class UserController {
 
 	@PostMapping("/FoodOrder")
 	public ResponseEntity<?> saveFoodOrder(@RequestBody FoodOrder foodOrder, @RequestParam String username,
-			RoomDetailsDTO roomDetails, RoomBooking roomBooking) {
+			RoomDetailsDTO roomDetails, RoomBooking roomBooking,@RequestParam Long id) {
 
 		// String username = principal.getName();
 
@@ -147,7 +149,7 @@ public class UserController {
 
 		roomBooking.setUserRegistration(user);
 
-		roomDetails = roomClient.getByRoomDetailsId(foodOrder.getRoomDetails().getId()).getBody();
+		roomDetails = roomClient.getByRoomDetailsId(id).getBody();
 
 		if (foodOrder.getRoomDetails().getRoomStatus() == true) {
 			System.out.println("Save FoodOrder>>>>>>>>>>>>>>>>>>>>>>");
