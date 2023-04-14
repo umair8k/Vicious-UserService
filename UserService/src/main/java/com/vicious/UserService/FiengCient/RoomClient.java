@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.vicious.UserService.DTO.RoomDetailsDTO;
 
-@FeignClient(name="ROOM-SERVICE",url="http://10.81.4.222:1996" )
+@FeignClient(name="ROOM-SERVICE",url="http://10.81.4.236:1993" )
 public interface RoomClient {
 	
 	@GetMapping("/getByRoomDetailsId/{id}")
@@ -30,4 +29,7 @@ public interface RoomClient {
 	
 	@GetMapping("/saveroometails")
 	public boolean saveRoomDetails(@RequestParam Long roomId);
+	
+	@GetMapping("/check")
+	public RoomDetailsDTO check(@RequestParam Long id);
 }

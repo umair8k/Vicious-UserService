@@ -3,6 +3,7 @@ package com.vicious.UserService.Controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import com.vicious.UserService.DTO.FoodMenuDTO;
 import com.vicious.UserService.DTO.HotelNamesDTO;
 import com.vicious.UserService.DTO.RoomDetailsDTO;
@@ -84,7 +84,7 @@ public class UserController {
 		roomDetails = roomClient.getByRoomDetailsId(Id).getBody();
 		// String username = roomBooking.getUserRegistration().getUsername();
 
-		UserRegistration user = this.userRepository.findByUsername(username);
+		UserRegistration user = this.userRepository.findByusername(username);
 
 		roomBooking.setUserRegistration(user);
 
@@ -117,18 +117,18 @@ public class UserController {
 			roomBooking.setGstTax((roomBooking.getTotal() * 18 / 100));
 			roomBooking.setTotalPrice(roomBooking.getTotal() + roomBooking.getGstTax());
 			System.out.println("==========" + days);
-			
-			//RoomDetailsDTO details1= new RoomDetailsDTO();
-			//details1.setRoomStatus(true);
+
+			// RoomDetailsDTO details1= new RoomDetailsDTO();
+			// details1.setRoomStatus(true);
 
 //			roomDetails.setRoomStatus(true);
-			//RoomDetailsDTO rooms1 = roomClient.save(details1);
+			// RoomDetailsDTO rooms1 = roomClient.save(details1);
 
-			boolean r=roomClient.saveRoomDetails(Id);
+			boolean r = roomClient.saveRoomDetails(Id);
 			roomDetails.setRoomStatus(r);
-			//roomBooking.setRoomDetails(roomDetails);
+			// roomBooking.setRoomDetails(roomDetails);
 //			rooms1.setRoomStatus(true);
-		roomBookingRepository.save(roomBooking);
+			roomBookingRepository.save(roomBooking);
 
 			return new ResponseEntity<RoomBooking>(roomBooking, HttpStatus.OK);
 
@@ -141,33 +141,51 @@ public class UserController {
 
 	@PostMapping("/FoodOrder")
 	public ResponseEntity<?> saveFoodOrder(@RequestBody FoodOrder foodOrder, @RequestParam String username,
-			RoomDetailsDTO roomDetails, RoomBooking roomBooking,@RequestParam Long id) {
+			RoomDetailsDTO roomDetails, RoomBooking roomBooking, @RequestParam Long id) {
 
 		// String username = principal.getName();
 
-		UserRegistration user = this.userRepository.findByUsername(username);
+		UserRegistration user = this.userRepository.findByusername(username);
 
 		roomBooking.setUserRegistration(user);
 
 		roomDetails = roomClient.getByRoomDetailsId(id).getBody();
+		System.err.println(roomDetails);
 
-		if (foodOrder.getRoomDetails().getRoomStatus() == true) {
+//		for(RoomDetailsDTO room:foodOrder.getRoomDetails()) {
+		//RoomDetailsDTO room = roomClient.check(id);
+		// }
+		if (roomDetails.getRoomStatus() == true) {
 			System.out.println("Save FoodOrder>>>>>>>>>>>>>>>>>>>>>>");
 			Double total = 0d;
+			
+//			for (int i=0;i<foodOrder.getFoodMenu().size();i++) {
+//				foodOrder.getFoodMenu().add(i, client1.getByFoodMenuId(foodOrder.getFoodMenu().get(i).getId()).getBody());
+//				total += foodOrder.getFoodMenu().get(i).getPrice();
+//			}
+			List<FoodMenuDTO> menudto = new ArrayList<FoodMenuDTO>();
+			
+			for(FoodMenuDTO foodmenu : foodOrder.getFoodMenu()) {
+            	foodmenu=client1.getByFoodMenuId(foodmenu.getId()).getBody();
+			foodmenu= client1.getByFoodMenuId(foodmenu.getId()).getBody();
+			menudto.add(foodmenu);
+				total+=foodmenu.getPrice();
+            
+            	//foodOrder.setFoodMenu(foodmenu);
+            }
+			
 
-			for (FoodMenuDTO foodmenu : foodOrder.getFoodMenu()) {
-				foodmenu = client1.getByFoodMenuId(foodmenu.getId()).getBody();
-				total += foodmenu.getPrice();
-			}
-
+			
 			foodOrder.setTotal(total);
 
 			return new ResponseEntity<>(foodOrderRepository.save(foodOrder), HttpStatus.CREATED);
 		} else {
-			return new ResponseEntity<>("can order only after booking the room", HttpStatus.BAD_REQUEST);
-
+			return null;
 		}
-
 	}
+	// else {
+//			return new ResponseEntity<>("can order only after booking the room", HttpStatus.BAD_REQUEST);
+//
+//		}
 
 }

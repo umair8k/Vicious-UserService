@@ -6,6 +6,5 @@ import com.vicious.UserService.Entity.UserRegistration;
 
 public interface UserRepository extends JpaRepository<UserRegistration, Long>{
 
-	UserRegistration findByUsername(String username);
-
+	UserRegistration findByusername(String username);
 }

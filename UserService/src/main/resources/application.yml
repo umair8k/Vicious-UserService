@@ -18,5 +18,5 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     #niha eureka
-    service-url.defaultZone: http://10.81.4.222:8761/eureka/
+    service-url.defaultZone: http://10.81.4.236:8761/eureka/
          

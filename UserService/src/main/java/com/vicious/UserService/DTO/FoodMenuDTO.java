@@ -1,5 +1,6 @@
 package com.vicious.UserService.DTO;
 
+
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
@@ -27,5 +28,7 @@ public class FoodMenuDTO {
     @Transient
     @ManyToOne
     private FoodCategoryDTO foodCategory;
+
+	
 }
 
